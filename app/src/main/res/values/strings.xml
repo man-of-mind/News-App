@@ -17,4 +17,8 @@
     <string name="error_data_message">Ooops....check your internet connection</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="image_desc">TODO</string>
+    <string name="news_headline">NEWS HEADLINE</string>
+    <string name="news_source">NEWS SOURCE</string>
+    <string name="published_date">PUBLISHED DATE</string>
 </resources>
