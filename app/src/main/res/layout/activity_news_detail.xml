@@ -8,14 +8,11 @@
             type="com.example.news.News" />
     </data>
 
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/colorPrimaryDark">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
+        android:background="@color/colorPrimaryDark"
         tools:context=".NewsDetailActivity">
 
         <TextView
@@ -36,7 +33,7 @@
         <ImageView
             android:id="@+id/newsImage"
             android:layout_width="match_parent"
-            android:layout_height="200dp"
+            android:layout_height="250dp"
             android:layout_gravity="center_vertical"
             app:layout_constraintStart_toStartOf="@id/headline"
             app:layout_constraintEnd_toEndOf="@id/headline"
@@ -72,23 +69,15 @@
             app:layout_constraintStart_toEndOf="@id/source"
             app:layout_constraintTop_toBottomOf="@id/newsImage" />
 
-        <TextView
-            android:id="@+id/content"
-            android:layout_width="wrap_content"
+        <WebView
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingTop="8dp"
-            android:paddingStart="8dp"
-            android:paddingBottom="8dp"
-            app:layout_constraintTop_toBottomOf="@id/source"
-            app:layout_constraintStart_toStartOf="parent"
+            android:id="@+id/webView"
+            android:layout_margin="8dp"
             app:layout_constraintEnd_toEndOf="@id/headline"
-            app:flow_horizontalBias="0.05"
-            app:flow_verticalBias="0.0"
-            android:textColor="@android:color/white"
-            android:textSize="14sp"
-            android:text="@{News.getContent}"/>
+            app:layout_constraintTop_toBottomOf="@id/source"
+            app:layout_constraintStart_toStartOf="@id/headline" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-    </ScrollView>
 </layout>

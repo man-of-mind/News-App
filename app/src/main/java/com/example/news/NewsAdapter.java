@@ -60,7 +60,15 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
         TextView textView2 = holder.publishedDate;
         textView2.setText(news.getPublishedDate());
         ImageView imageView = holder.image;
-        Picasso.with(imageView.getContext()).load(news.getImageUrl()).error(R.drawable.ic_image).into(imageView);
+        String image = news.getImageUrl();
+        if(image != null){
+            Picasso.with(imageView.getContext()).load(image).error(R.drawable.ic_image).into(imageView);
+        }
+        else{
+//            Picasso.with(imageView.getContext()).load(R.drawable.ic_image);
+            imageView.setImageResource(R.drawable.ic_image);
+        }
+
     }
 
     @Override

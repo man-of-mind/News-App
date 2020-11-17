@@ -80,11 +80,15 @@ public class News implements Parcelable {
 
     @BindingAdapter({"android:imageUrl"})
     public static void loadImage(ImageView view, String imageUrl){
-        if(!imageUrl.isEmpty()) {
-            Picasso.with(view.getContext()).load(imageUrl).placeholder(R.drawable.ic_image).into(view);
+        if(imageUrl != null) {
+            if (!imageUrl.isEmpty()) {
+                Picasso.with(view.getContext()).load(imageUrl).placeholder(R.drawable.ic_image).into(view);
+            } else {
+                view.setBackgroundResource(R.drawable.ic_image);
+            }
         }
         else{
-            view.setBackgroundResource(R.drawable.ic_image);
+            view.setImageResource(R.drawable.ic_image);
         }
     }
 }
