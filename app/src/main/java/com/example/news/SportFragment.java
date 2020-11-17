@@ -1,12 +1,33 @@
 package com.example.news;
 
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.AsyncDifferConfig;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -23,6 +44,9 @@ public class SportFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+    private ProgressBar mLoadingProgress;
+    private RecyclerView mRecyclerView;
+    private TextView mError;
 
     public SportFragment() {
         // Required empty public constructor
@@ -59,6 +83,63 @@ public class SportFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_main, container, false);
+        View rootView =  inflater.inflate(R.layout.fragment_main, container, false);
+
+        mLoadingProgress = rootView.findViewById(R.id.news_loading);
+        mRecyclerView = rootView.findViewById(R.id.news_recycler);
+        mError = rootView.findViewById(R.id.news_error);
+
+        LinearLayoutManager newsLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager
+                .VERTICAL, false);
+        mRecyclerView.setLayoutManager(newsLayoutManager);
+
+        final String COUNTRY = "ng";
+        final String CATEGORY = "sport";
+        final String API_KEY = "ed61cc66f42d4fc484e66103d605ad62";
+        final String ENDPOINT = "top-headlines";
+
+        Retrofit retrofit = new Retrofit.Builder().baseUrl(JsonPlaceHolder.BASE_API)
+                .addConverterFactory(GsonConverterFactory.create()).build();
+        JsonPlaceHolder jsonPlaceHolder = retrofit.create(JsonPlaceHolder.class);
+        Call<NewsList> call = jsonPlaceHolder.getSportNews(ENDPOINT,null,COUNTRY,
+                CATEGORY, API_KEY);
+
+        call.enqueue(new Callback<NewsList>() {
+            @Override
+            public void onResponse(Call<NewsList> call, Response<NewsList> response) {
+                if (response.isSuccessful()) {
+                    NewsList article = response.body();
+
+                    assert article != null;
+                    List<NewsResult> newsResult = article.getArticle();
+                    ArrayList<News> news = new ArrayList<>();
+                    for (int i = 0; i < newsResult.size(); i++) {
+                        NewsResult newsResult1 = newsResult.get(i);
+                        String title = newsResult1.getTitle();
+                        String image = newsResult1.getImage();
+                        String publishedAt = newsResult1.getPublishedAt();
+                        Source source = newsResult1.getSource();
+                        String author = source.getName();
+                        String content = newsResult1.getContent();
+                        News news1 = new News(title, image, author, content, publishedAt);
+                        news.add(news1);
+                    }
+
+                    NewsAdapter adapter = new NewsAdapter(getContext(), news);
+                    mRecyclerView.setAdapter(adapter);
+                }
+                else{
+                    Log.e(SportFragment.class.getSimpleName(), String.valueOf(response.code()));
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<NewsList> call, Throwable t) {
+                Log.e(SportFragment.class.getSimpleName(), Objects.requireNonNull(t.getMessage()));
+            }
+        });
+
+        return rootView;
     }
 }

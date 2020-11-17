@@ -44,10 +44,10 @@ public class SimpleFragmentAdapter extends FragmentPagerAdapter {
             return mContext.getString(R.string.topStory);
         }
         else if (position == 1){
-            return mContext.getString(R.string.business);
+            return mContext.getString(R.string.sport);
         }
         else if (position == 2){
-            return mContext.getString(R.string.sport);
+            return mContext.getString(R.string.business);
         }
         else {
             return mContext.getString(R.string.entertainment);

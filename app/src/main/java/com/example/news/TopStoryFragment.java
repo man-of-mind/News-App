@@ -149,7 +149,7 @@ public class TopStoryFragment extends Fragment {
             else{
                 mError.setVisibility(View.INVISIBLE);
                 mRecyclerView.setVisibility(View.VISIBLE);
-                ArrayList<News> news = getBooksFromJson(result);
+                ArrayList<News> news = getNewsFromJson(result);
 
 
 
@@ -208,7 +208,7 @@ public class TopStoryFragment extends Fragment {
         }
     }
 
-    private ArrayList<News> getBooksFromJson(String json) {
+    private ArrayList<News> getNewsFromJson(String json) {
         final String TITLE = "title";
         final String ARTICLE = "articles";
         final String SOURCE = "source";
