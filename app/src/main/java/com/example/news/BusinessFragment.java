@@ -3,10 +3,25 @@ package com.example.news;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -23,6 +38,9 @@ public class BusinessFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+    private TextView mError;
+    private RecyclerView mRecyclerView;
+    private ProgressBar mProgressBar;
 
     public BusinessFragment() {
         // Required empty public constructor
@@ -59,6 +77,60 @@ public class BusinessFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_main, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+        mError = rootView.findViewById(R.id.news_error);
+        mRecyclerView = rootView.findViewById(R.id.news_recycler);
+        mProgressBar = rootView.findViewById(R.id.news_loading);
+        String category = "business";
+        String country = "ng";
+        String endpoint = "top-headlines";
+        LinearLayoutManager newsLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager
+                .VERTICAL, false);
+        mRecyclerView.setLayoutManager(newsLayoutManager);
+        Retrofit retrofit = new Retrofit.Builder().baseUrl(JsonPlaceHolder.BASE_API).addConverterFactory(
+                GsonConverterFactory.create()).build();
+        JsonPlaceHolder jsonPlaceHolder = retrofit.create(JsonPlaceHolder.class);
+        Call<NewsList> call = jsonPlaceHolder.getBusinessNews(endpoint, null, country, category,
+                JsonPlaceHolder.API_KEY);
+        mProgressBar.setVisibility(View.VISIBLE);
+        call.enqueue(new Callback<NewsList>() {
+            @Override
+            public void onResponse(Call<NewsList> call, Response<NewsList> response) {
+                mProgressBar.setVisibility(View.GONE);
+                if(response.isSuccessful()){
+                    mError.setVisibility(View.INVISIBLE);
+                    mRecyclerView.setVisibility(View.VISIBLE);
+                    NewsList article = response.body();
+                    List<NewsResult> newsResults = article.getArticle();
+                    ArrayList<News> news = new ArrayList<>();
+                    for (int i = 0; i < newsResults.size(); i++){
+                        NewsResult newsResult = newsResults.get(i);
+                        String title = newsResult.getTitle();
+                        String image = newsResult.getImage();
+                        String content = newsResult.getContent();
+                        Source source= newsResult.getSource();
+                        String author = source.getName();
+                        String publishedAt = newsResult.getPublishedAt();
+                        News news1 = new News(title, image, author, content, publishedAt);
+                        news.add(news1);
+                    }
+                    NewsAdapter adapter = new NewsAdapter(getContext(), news, mRecyclerView);
+                    mRecyclerView.setAdapter(adapter);
+                }
+                else {
+                    Log.e(BusinessFragment.class.getSimpleName(), String.valueOf(response.code()));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<NewsList> call, Throwable t) {
+                mProgressBar.setVisibility(View.GONE);
+                mRecyclerView.setVisibility(View.INVISIBLE);
+                mError.setVisibility(View.VISIBLE);
+                Toast.makeText(getContext(), "Error retrieving data from the internet", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        return  rootView;
     }
 }

@@ -1,6 +1,7 @@
 package com.example.news;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,11 +18,24 @@ import java.util.ArrayList;
 public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder> {
     private ArrayList<News> mNews;
     Context mContext;
+    private RecyclerView mRecyclerView;
 
-    public NewsAdapter(Context context, ArrayList<News> news) {
+    public NewsAdapter(Context context, ArrayList<News> news, RecyclerView recyclerView) {
         this.mContext = context;
         this.mNews = news;
+        this.mRecyclerView = recyclerView;
     }
+
+    private View.OnClickListener mOnClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            int position = mRecyclerView.getChildAdapterPosition(view);
+            News selectedNews = mNews.get(position);
+            Intent intent = new Intent(view.getContext(), NewsDetailActivity.class);
+            intent.putExtra("News", selectedNews);
+            view.getContext().startActivity(intent);
+        }
+    };
 
     @NonNull
     @Override
@@ -29,7 +43,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
         Context context = parent.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
         View newsView = inflater.inflate(R.layout.news_list, parent, false);
-//        musicView.setOnClickListener(mOnClickListener);
+        newsView.setOnClickListener(mOnClickListener);
 
         return new NewsViewHolder(newsView);
     }

@@ -21,4 +21,5 @@
     <string name="news_headline">NEWS HEADLINE</string>
     <string name="news_source">NEWS SOURCE</string>
     <string name="published_date">PUBLISHED DATE</string>
+    <string name="news_imageurl">news imageUrl</string>
 </resources>

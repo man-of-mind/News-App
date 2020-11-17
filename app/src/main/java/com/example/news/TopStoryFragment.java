@@ -1,14 +1,11 @@
 package com.example.news;
 
-import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,20 +13,15 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -54,7 +46,6 @@ public class TopStoryFragment extends Fragment {
         // Required empty public constructor
     }
 
-    //    private static final String REQUEST = BASE_API + API_KEY;
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -92,157 +83,59 @@ public class TopStoryFragment extends Fragment {
         mLoadingProgress = rootView.findViewById(R.id.news_loading);
         mRecyclerView = rootView.findViewById(R.id.news_recycler);
         mError = rootView.findViewById(R.id.news_error);
-
-        LinearLayoutManager musicLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager
-                .VERTICAL, false);
-        mRecyclerView.setLayoutManager(musicLayoutManager);
-
-        URL url = null;
-        final String KEY = "apikey";
-        final String QUERY_PARAMETER = "country";
         final String COUNTRY = "ng";
-        final String BASE_API = "https://newsapi.org/v2/top-headlines";
-        final String API_KEY = "ed61cc66f42d4fc484e66103d605ad62";
-        Uri uri = Uri.parse((BASE_API)).buildUpon().appendQueryParameter(QUERY_PARAMETER, COUNTRY)
-                .appendQueryParameter(KEY, API_KEY).build();
-        Log.e(TopStoryFragment.class.getSimpleName(), "uri = " + uri );
-        try {
-//            url = new URL(REQUEST);
-            url = new URL(uri.toString());
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
+        final String endpoint = "top-headlines";
 
-        new NewsAsyncTask().execute(url);
+        LinearLayoutManager newsLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager
+                .VERTICAL, false);
+        mRecyclerView.setLayoutManager(newsLayoutManager);
 
-        return rootView;
-    }
-
-    private class NewsAsyncTask extends AsyncTask<URL, Void, String>{
-
-        @Override
-        protected String doInBackground(URL... urls) {
-            URL url = urls[0];
-            String jsonResponse = null;
-            try {
-                jsonResponse = makeHttpRequest(url);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return jsonResponse;
-        }
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            mLoadingProgress.setVisibility(View.VISIBLE);
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            mLoadingProgress.setVisibility(View.INVISIBLE);
-            if (TextUtils.isEmpty(result)){
-                mRecyclerView.setVisibility(View.INVISIBLE);
-                mError.setVisibility(View.VISIBLE);
-                Toast.makeText(getContext(), "Error retrieving data from the internet", Toast.LENGTH_LONG).show();
-            }
-            else{
+        Retrofit retrofit = new Retrofit.Builder().baseUrl(JsonPlaceHolder.BASE_API).addConverterFactory(
+                GsonConverterFactory.create()).build();
+        JsonPlaceHolder jsonPlaceHolder = retrofit.create(JsonPlaceHolder.class);
+        Call<NewsList> call = jsonPlaceHolder.getTopNews(endpoint,null, COUNTRY, JsonPlaceHolder.API_KEY);
+        mLoadingProgress.setVisibility(View.VISIBLE);
+        call.enqueue(new Callback<NewsList>() {
+            @Override
+            public void onResponse(Call<NewsList> call, Response<NewsList> response) {
+                mLoadingProgress.setVisibility(View.GONE);
                 mError.setVisibility(View.INVISIBLE);
                 mRecyclerView.setVisibility(View.VISIBLE);
-                ArrayList<News> news = getNewsFromJson(result);
-
-
-
-                String resultString = "";
-                NewsAdapter adapter = new NewsAdapter(getContext(), news);
-                mRecyclerView.setAdapter(adapter);
-            }
-        }
-
-        private String makeHttpRequest(URL url) throws IOException {
-            String jsonResponse = "";
-            if (url != null) {
-                HttpURLConnection urlConnection = null;
-                InputStream inputStream = null;
-                try {
-                    urlConnection = (HttpURLConnection) url.openConnection();
-                    urlConnection.setRequestMethod("GET");
-                    urlConnection.setReadTimeout(10000);
-                    urlConnection.setConnectTimeout(15000);
-                    urlConnection.connect();
-                    if (urlConnection.getResponseCode() == 200) {
-                        inputStream = urlConnection.getInputStream();
-                        jsonResponse = readFromStream(inputStream);
+                if(response.isSuccessful()){
+                    NewsList newsList = response.body();
+                    assert newsList != null;
+                    List<NewsResult> newsResults = newsList.getArticle();
+                    ArrayList<News> news = new ArrayList<>();
+                    for (int i = 0; i < newsResults.size(); i++){
+                        NewsResult newsResult = newsResults.get(i);
+                        String title = newsResult.getTitle();
+                        String image = newsResult.getImage();
+                        String publishedAt = newsResult.getPublishedAt();
+                        Source source = newsResult.getSource();
+                        String author = source.getName();
+                        String content = newsResult.getContent();
+                        String url = newsResult.getUrl();
+                        News news1 = new News(title, image, author, content, publishedAt);
+                        news.add(news1);
                     }
-                    else{
-                        Log.e(TopStoryFragment.class.getSimpleName(), "Error response code " + urlConnection.getResponseCode());
-                    }
-                } catch (IOException e) {
-                    assert urlConnection != null;
-                    Log.e(TopStoryFragment.class.getSimpleName(), "Error response code " + urlConnection.getResponseCode());
-                } finally {
-                    if (urlConnection != null) {
-                        urlConnection.disconnect();
-                    }
-                    if (inputStream != null) {
-                        inputStream.close();
-                    }
+                    NewsAdapter adapter = new NewsAdapter(getContext(), news, mRecyclerView);
+                    mRecyclerView.setAdapter(adapter);
+                }
+                else {
+                    Log.e(TopStoryFragment.class.getSimpleName(), String.valueOf(response.code()));
                 }
             }
-            return jsonResponse;
-        }
 
-        private String readFromStream(InputStream inputStream) throws IOException {
-            StringBuilder output = new StringBuilder();
-            if (inputStream != null) {
-                InputStreamReader inputStreamReader = new InputStreamReader(inputStream, Charset.forName("UTF-8"));
-                BufferedReader reader = new BufferedReader(inputStreamReader);
-                String line = reader.readLine();
-                while (line != null){
-                    output.append(line);
-                    line = reader.readLine();
-                }
+            @Override
+            public void onFailure(Call<NewsList> call, Throwable t) {
+                mLoadingProgress.setVisibility(View.GONE);
+                mRecyclerView.setVisibility(View.INVISIBLE);
+                mError.setVisibility(View.VISIBLE);
+                Log.e(TopStoryFragment.class.getSimpleName(), Objects.requireNonNull(t.getMessage()));
+                Toast.makeText(getContext(), "Error retrieving data from the internet", Toast.LENGTH_SHORT).show();
             }
-            return output.toString();
+        });
 
-        }
-    }
-
-    private ArrayList<News> getNewsFromJson(String json) {
-        final String TITLE = "title";
-        final String ARTICLE = "articles";
-        final String SOURCE = "source";
-        final String PUBLISHED_DATE = "publishedAt";
-        final String NAME = "name";
-        final String IMAGE = "urlToImage";
-        final String CONTENT = "content";
-
-        ArrayList<News> news = new ArrayList<News>();
-        try{
-            JSONObject jsonNews = new JSONObject(json);
-            JSONArray arrayNews = jsonNews.getJSONArray(ARTICLE);
-            int numberOfNews = arrayNews.length();
-            for(int i = 0; i < numberOfNews; i++){
-                JSONObject newsJSON = arrayNews.getJSONObject(i);
-                JSONObject sourceInfo = newsJSON.getJSONObject(SOURCE);
-                String newsTitle = newsJSON.getString(TITLE);
-                String image = null;
-                if(newsJSON.has(IMAGE)){
-                    image = newsJSON.getString(IMAGE);
-                }
-                String content = newsJSON.getString(CONTENT);
-                String publishedDate = newsJSON.getString(PUBLISHED_DATE);
-                News news1 = new News(
-                        newsTitle,
-                        image,
-                        sourceInfo.getString(NAME),
-                        content, publishedDate);
-                news.add(news1);
-            }
-        }
-        catch(JSONException e){
-            e.printStackTrace();
-        }
-        return news;
+        return rootView;
     }
 }

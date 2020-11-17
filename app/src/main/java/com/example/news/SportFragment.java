@@ -1,7 +1,5 @@
 package com.example.news;
 
-import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -17,8 +15,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -95,18 +91,21 @@ public class SportFragment extends Fragment {
 
         final String COUNTRY = "ng";
         final String CATEGORY = "sport";
-        final String API_KEY = "ed61cc66f42d4fc484e66103d605ad62";
         final String ENDPOINT = "top-headlines";
 
         Retrofit retrofit = new Retrofit.Builder().baseUrl(JsonPlaceHolder.BASE_API)
                 .addConverterFactory(GsonConverterFactory.create()).build();
         JsonPlaceHolder jsonPlaceHolder = retrofit.create(JsonPlaceHolder.class);
         Call<NewsList> call = jsonPlaceHolder.getSportNews(ENDPOINT,null,COUNTRY,
-                CATEGORY, API_KEY);
+                CATEGORY, JsonPlaceHolder.API_KEY);
+        mLoadingProgress.setVisibility(View.VISIBLE);
 
         call.enqueue(new Callback<NewsList>() {
             @Override
             public void onResponse(Call<NewsList> call, Response<NewsList> response) {
+                mLoadingProgress.setVisibility(View.GONE);
+                mError.setVisibility(View.INVISIBLE);
+                mRecyclerView.setVisibility(View.VISIBLE);
                 if (response.isSuccessful()) {
                     NewsList article = response.body();
 
@@ -125,7 +124,7 @@ public class SportFragment extends Fragment {
                         news.add(news1);
                     }
 
-                    NewsAdapter adapter = new NewsAdapter(getContext(), news);
+                    NewsAdapter adapter = new NewsAdapter(getContext(), news, mRecyclerView);
                     mRecyclerView.setAdapter(adapter);
                 }
                 else{
@@ -136,7 +135,11 @@ public class SportFragment extends Fragment {
 
             @Override
             public void onFailure(Call<NewsList> call, Throwable t) {
+                mLoadingProgress.setVisibility(View.GONE);
                 Log.e(SportFragment.class.getSimpleName(), Objects.requireNonNull(t.getMessage()));
+                mRecyclerView.setVisibility(View.INVISIBLE);
+                mError.setVisibility(View.VISIBLE);
+                Toast.makeText(getContext(), "Error retrieving data from the internet", Toast.LENGTH_SHORT).show();
             }
         });
 
