@@ -39,5 +39,6 @@
             android:hint="@string/query" />
 
 
+
     </androidx.appcompat.widget.LinearLayoutCompat>
 </androidx.cardview.widget.CardView>
