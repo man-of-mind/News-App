@@ -2,11 +2,7 @@ package com.example.news;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.widget.ImageView;
 
-import androidx.databinding.BindingAdapter;
-
-import com.squareup.picasso.Picasso;
 
 public class News implements Parcelable {
     private String mTitle;
@@ -76,19 +72,5 @@ public class News implements Parcelable {
         parcel.writeString(mContent);
         parcel.writeString(mPublishedDate);
 
-    }
-
-    @BindingAdapter({"android:imageUrl"})
-    public static void loadImage(ImageView view, String imageUrl){
-        if(imageUrl != null) {
-            if (!imageUrl.isEmpty()) {
-                Picasso.with(view.getContext()).load(imageUrl).placeholder(R.drawable.ic_image).into(view);
-            } else {
-                view.setBackgroundResource(R.drawable.ic_image);
-            }
-        }
-        else{
-            view.setImageResource(R.drawable.ic_image);
-        }
     }
 }

@@ -65,7 +65,6 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
             Picasso.with(imageView.getContext()).load(image).error(R.drawable.ic_image).into(imageView);
         }
         else{
-//            Picasso.with(imageView.getContext()).load(R.drawable.ic_image);
             imageView.setImageResource(R.drawable.ic_image);
         }
 

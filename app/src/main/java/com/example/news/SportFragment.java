@@ -119,7 +119,7 @@ public class SportFragment extends Fragment {
                         String publishedAt = newsResult1.getPublishedAt();
                         Source source = newsResult1.getSource();
                         String author = source.getName();
-                        String content = newsResult1.getContent();
+                        String content = newsResult1.getUrl();
                         News news1 = new News(title, image, author, content, publishedAt);
                         news.add(news1);
                     }

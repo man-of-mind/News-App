@@ -109,7 +109,7 @@ public class EntertainmentFragment extends Fragment {
                         NewsResult newsResult = newsResults.get(i);
                         String title = newsResult.getTitle();
                         String image = newsResult.getImage();
-                        String content = newsResult.getContent();
+                        String content = newsResult.getUrl();
                         Source source= newsResult.getSource();
                         String author = source.getName();
                         String publishedAt = newsResult.getPublishedAt();

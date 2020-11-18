@@ -113,9 +113,8 @@ public class TopStoryFragment extends Fragment {
                         String publishedAt = newsResult.getPublishedAt();
                         Source source = newsResult.getSource();
                         String author = source.getName();
-                        String content = newsResult.getContent();
                         String url = newsResult.getUrl();
-                        News news1 = new News(title, image, author, content, publishedAt);
+                        News news1 = new News(title, image, author, url, publishedAt);
                         news.add(news1);
                     }
                     NewsAdapter adapter = new NewsAdapter(getContext(), news, mRecyclerView);
