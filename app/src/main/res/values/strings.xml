@@ -22,4 +22,6 @@
     <string name="news_source">NEWS SOURCE</string>
     <string name="published_date">PUBLISHED DATE</string>
     <string name="news_imageurl">news imageUrl</string>
+    <string name="query">query</string>
+    <string name="category_sport_business_etc">category:sport, business etc</string>
 </resources>
