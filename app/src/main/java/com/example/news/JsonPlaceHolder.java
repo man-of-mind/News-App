@@ -11,21 +11,7 @@ public interface JsonPlaceHolder {
     String API_KEY = "ed61cc66f42d4fc484e66103d605ad62";
 
     @GET("{endpoint}")
-    Call<NewsList> getSportNews(@Path("endpoint") String endpoint,
-                                       @Query("q") String query,
-                                       @Query("country") String country,
-                                       @Query("category") String category,
-                                       @Query("apikey") String apiKey);
-
-    @GET("{endpoint}")
-    Call<NewsList> getBusinessNews(@Path("endpoint") String endpoint,
-                                           @Query("q") String query,
-                                           @Query("country") String country,
-                                           @Query("category") String category,
-                                           @Query("apikey") String apiKey);
-
-    @GET("{endpoint}")
-    Call<NewsList> getEntertainmentNews(@Path("endpoint") String endpoint,
+    Call<NewsList> getCategoryNews(@Path("endpoint") String endpoint,
                                            @Query("q") String query,
                                            @Query("country") String country,
                                            @Query("category") String category,
@@ -36,5 +22,10 @@ public interface JsonPlaceHolder {
                                            @Query("q") String query,
                                            @Query("country") String country,
                                            @Query("apikey") String apiKey);
+
+    @GET("everything")
+    Call<NewsList> getEverything(@Query("q") String query,
+                                 @Query("language") String lang,
+                                 @Query("apikey") String apiKey);
 
 }

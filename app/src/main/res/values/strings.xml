@@ -24,4 +24,9 @@
     <string name="news_imageurl">news imageUrl</string>
     <string name="query">query</string>
     <string name="category_sport_business_etc">category:sport, business etc</string>
+    <string name="top_headlines_or_everything">top-headlines or everything</string>
+    <string name="search">Search</string>
+    <string name="enter_your_search">Enter Your Search</string>
+    <string name="search_menu">Search</string>
+    <string name="no_search_data">Please enter a valid search</string>
 </resources>

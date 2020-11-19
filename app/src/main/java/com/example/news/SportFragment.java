@@ -96,7 +96,7 @@ public class SportFragment extends Fragment {
         Retrofit retrofit = new Retrofit.Builder().baseUrl(JsonPlaceHolder.BASE_API)
                 .addConverterFactory(GsonConverterFactory.create()).build();
         JsonPlaceHolder jsonPlaceHolder = retrofit.create(JsonPlaceHolder.class);
-        Call<NewsList> call = jsonPlaceHolder.getSportNews(ENDPOINT,null,COUNTRY,
+        Call<NewsList> call = jsonPlaceHolder.getCategoryNews(ENDPOINT,null,COUNTRY,
                 CATEGORY, JsonPlaceHolder.API_KEY);
         mLoadingProgress.setVisibility(View.VISIBLE);
 

@@ -17,7 +17,6 @@ public class NewsDetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_news_detail);
         News news = getIntent().getParcelableExtra("News");
-
         WebView webView = findViewById(R.id.webView);
         webView.setWebViewClient(new MyBrowser());
         assert news != null;
