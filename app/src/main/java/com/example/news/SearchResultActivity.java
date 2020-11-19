@@ -47,6 +47,8 @@ public class SearchResultActivity extends AppCompatActivity {
         Retrofit retrofit = new Retrofit.Builder().baseUrl(JsonPlaceHolder.BASE_API)
                 .addConverterFactory(GsonConverterFactory.create()).build();
         JsonPlaceHolder jsonPlaceHolder = retrofit.create(JsonPlaceHolder.class);
+        assert query != null;
+        assert category != null;
         if(!query.equals("") && category.equals("")){
             Call<NewsList> call = jsonPlaceHolder.getEverything(query, "en", JsonPlaceHolder.API_KEY);
             mLoadingProgress.setVisibility(View.VISIBLE);
