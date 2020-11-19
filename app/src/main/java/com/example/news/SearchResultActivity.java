@@ -47,7 +47,7 @@ public class SearchResultActivity extends AppCompatActivity {
         Retrofit retrofit = new Retrofit.Builder().baseUrl(JsonPlaceHolder.BASE_API)
                 .addConverterFactory(GsonConverterFactory.create()).build();
         JsonPlaceHolder jsonPlaceHolder = retrofit.create(JsonPlaceHolder.class);
-        if(query != null && category == null){
+        if(!query.equals("") && category.equals("")){
             Call<NewsList> call = jsonPlaceHolder.getEverything(query, "en", JsonPlaceHolder.API_KEY);
             mLoadingProgress.setVisibility(View.VISIBLE);
             call.enqueue(new Callback<NewsList>() {
@@ -90,7 +90,7 @@ public class SearchResultActivity extends AppCompatActivity {
                 }
             });
         }
-        else if (query == null && category != null){
+        else if (query.equals("") && !category.equals("")){
             Call<NewsList> call = jsonPlaceHolder.getEverything(category, "en", JsonPlaceHolder.API_KEY);
             mLoadingProgress.setVisibility(View.VISIBLE);
             call.enqueue(new Callback<NewsList>() {
