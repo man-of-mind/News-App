@@ -29,4 +29,5 @@
     <string name="enter_your_search">Enter Your Search</string>
     <string name="search_menu">Search</string>
     <string name="no_search_data">Please enter a valid search</string>
+    <string name="bookmarked_news">Bookmarked news</string>
 </resources>
