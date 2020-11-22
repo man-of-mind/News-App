@@ -8,9 +8,10 @@
         android:title="@string/search_menu"
         app:showAsAction="never" />
 
-    <item
+<!--    <item
         android:id="@+id/cache"
         android:orderInCategory="2"
         android:title="@string/bookmarked_news"
         app:showAsAction="never" />
+        -->
 </menu>
