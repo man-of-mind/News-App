@@ -6,10 +6,18 @@ android {
 
     defaultConfig {
         applicationId "com.example.news"
-        minSdkVersion 27
+        minSdkVersion 16
         targetSdkVersion 30
         versionCode 1
         versionName "1.0"
+        splits{
+            abi{
+                enable true
+                reset()
+                include 'x86', 'x86_64', 'armeabi-v7a', 'arm64-v8a'
+                universalApk true
+            }
+        }
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
